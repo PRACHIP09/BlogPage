@@ -13,19 +13,21 @@ import BlogPage from './component/BlogPage';
 import AllBlog from './component/AllBlog';
 import MyBlog from './component/MyBlog';
 import Edit from './component/Edit';
+import Private from './component/Private';
+import {AuthProvider} from './component/AuthContext';
 function App() {
   
   return (
     
      
-       <Router>
+      <Router>
         
-       <main>
+        <AuthProvider>
         <Switch>
-          <Route path ="/" exact>
+          <Private path ="/" exact>
             <Navbar/>
             <Home/>
-          </Route>
+          </Private>
           <Route path ="/Register" exact>
           < Navbar/>
             <Register/>
@@ -50,12 +52,14 @@ function App() {
           <Route path='/Edit/:id'>
             <Navbar/>
             <Edit/>
+           
           </Route>
 
           <Redirect to="/" />
-        </Switch>
+          
         
-      </main>
+        </Switch>
+        </AuthProvider>
       </Router>
     
   );

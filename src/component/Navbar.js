@@ -1,17 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext} from "react";
 import { Route,NavLink , useHistory } from "react-router-dom";
 import "./Navbar.css";
 import Edit from "./Edit";
+import AuthContext  from "./AuthContext";
 <Route path='/id/Edit' component={Edit} />
-function NavBar() {
+const NavBar = () => {
+
+  let { logout } =useContext(AuthContext);
   const [click, setClick] = useState(false);
-  let token = JSON.parse(localStorage.getItem('user'));
-  const history = useHistory();
-  function logOut()
-  {
-    localStorage.clear();
-    history.push('/Login')
-  }
+
   const handleClick = () => setClick(!click);
   return (
     <>
@@ -21,13 +18,13 @@ function NavBar() {
             DAILY BLOGS
           </NavLink>
          { 
-          localStorage.getItem('user') ?
+          localStorage.getItem('authToken') ?
           <>
           <ul className={click ? "nav-menu active" : "nav-menu"}>
             <li className="nav-item">
               <NavLink
                 exact
-                to="/Blogpage"
+                to="/"
                 activeClassName="active"
                 className="nav-links"
                 onClick={handleClick}>
@@ -63,10 +60,11 @@ function NavBar() {
                 activeClassName="active"
                 className="nav-links"
                 onClick={handleClick}
-                onClick={logOut}>
+                onClick={logout}>
                 Logout
               </NavLink>
             </li>
+            
            
             
           </ul>

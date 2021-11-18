@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react'
+import React,{useContext, useEffect,useState, createContext} from 'react'
 import { useParams,useHistory } from 'react-router';
 import axios from 'axios'; 
 import {Link} from 'react-router-dom';
@@ -8,6 +8,7 @@ import {
   Button
   
 } from '@material-ui/core';
+import AuthContext from './AuthContext';
 
 
 const useStyles = makeStyles((theme) => 
@@ -62,13 +63,9 @@ const Edit = () => {
   const{id} = useParams();
   let history = useHistory();
 
-var token=localStorage.getItem('user')
-console.log(token)
-var tokens = token.replace(/['"]+/g, '');
-/*var etitle = localStorage.getItem('editTitle') ;
-var edtitle = etitle.replace(/['"]+/g, '')
-var edesc = localStorage.getItem('editdescp'); 
-var edDescp = edesc.replace(/['"]+/g, '')*/
+  let{authToken} = useContext(AuthContext)
+  
+  const Edit = createContext();
 
     const [image, setLoadImage] = useState(null)
     const [title, setTitle] = useState()
@@ -84,11 +81,13 @@ var edDescp = edesc.replace(/['"]+/g, '')*/
           method: 'PUT',
           url:`http://dhirajssh.pythonanywhere.com/api/blogs/detail/${id}/`,
           data: formField,
-          headers: {"Authorization": `Bearer ${tokens}`}
+          headers: {"Authorization": `Bearer ${authToken.access}`}
           
         }).then(response=>{
           console.log(response.data);
           history.push('/')
+          
+
         })
 
     }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import Signup from './Signup';
 import {
     Button,
@@ -149,7 +149,95 @@ const Login =() =>  {
 
 export default Login
 
+*/
+import React, { useContext } from "react"
+import AuthContext from './AuthContext'
+import {Link} from 'react-router-dom';
+import {
+    makeStyles,
+    Typography
+    
+} from '@material-ui/core';
+import SignUp from "./Signup"
+import { borderRadius } from "@mui/system";
+const useStyles = makeStyles({
+    mainContainer : {
+        display:"grid",
+        justifyContent:"center",
+        position:"relative",
+        zIndex: 5
+    },
+    formContainer:{
+        position:"relative",
+        width:"23rem",
+        height:"auto",
+        justifyContent:"center",
+        padding:"10px",
+    },
+    inputbox:{
+     marginBottom:"1rem",
+     width:"100%",
+     height:"2rem",
+     border:"none",
+     borderRadius:"5px"
+    },
+    signbtn:{
+        width:"100%",
+        height:"2.5rem",
+        background : "#95a6fe",
+        color:"black",
+        fontSize:"1.1rem",
+        border:"none",
+        borderRadius:"5px"
+    },
+    disablesignbtn:{
+        background:"rgb(149, 166, 254, 0.5)",
+        width:"100%",
+        height:"2.5rem",
+        color:"black",
+        fontSize:"1.1rem"
+    }
+})
 
+const Login = () => {
+  const {loginUser} = useContext(AuthContext);
+  
+const classes = useStyles();
+  return (
+    <div className={classes.mainContainer}>
+        <Typography variant = "h5"
+           style={{color : "#000" , textAlign : "center",margin:"1.3rem 0 " ,backgroundColor:"#ffa77f" ,borderRadius:"5px"}}>
+              Login
+           </Typography>
+      <form className={classes.formContainer} onSubmit={loginUser}>
+       
+        <input  className = {classes.inputbox} type="email" name='email' placeholder="email" ></input>
+        <input className = {classes.inputbox} type="password" name='password' placeholder="* * * *"></input>
+        
+        <button className ={classes.signbtn}><Link to = "/BlogPage"></Link></button>
+      </form>
+    </div>
+  );
+};
 
+export default Login;
 
+/*import React, {useContext} from 'react'
+import AuthContext from '../context/AuthContext'
 
+const LoginPage = () => {
+    let {loginUser} = useContext(AuthContext)
+    
+    return (
+        <div>
+            <form onSubmit={loginUser}>
+                <input type="text" name="username" placeholder="Enter Username" />
+                <input type="password" name="password" placeholder="Enter Password" />
+                <input type="submit"/>
+            </form>
+        </div>
+    )
+}
+
+export default LoginPage
+*/

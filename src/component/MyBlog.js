@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useContext } from "react";
 import axios from "axios";
 import {
   TextField,
@@ -16,7 +16,9 @@ import { Link } from "react-router-dom";
 import useMeasure from 'react-use-measure'
 import { useSpring, animated } from '@react-spring/web'
 import styles from './styles.module.css'
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import AuthContext from "./AuthContext";
+
 const useStyles = makeStyles((theme) => 
 ({
   
@@ -73,7 +75,9 @@ function MyBlog() {
   const [load, setLoadImage] = useState([]);
   const [title, setName] = useState("");
   const [description, setDesc] = useState("");
-  var token=localStorage.getItem('user')
+  //var token=localStorage.getItem('authToken')
+
+  let {authToken} = useContext(AuthContext)
 
   const [open, toggle] = useState(false)
   const [ref, { width }] = useMeasure()
@@ -85,13 +89,13 @@ function MyBlog() {
  
   const loadList = async () => {
     const result = await axios.get("http://dhirajssh.pythonanywhere.com/api/user/blogs/",{
-      headers: {"Authorization": `Bearer ${tokens}`},
+      headers: {"Authorization": `Bearer ${authToken.access}`},
     });
     setLoadImage(result.data.reverse());
 
   };
-  console.log(token)
-  var tokens = token.replace(/['"]+/g, '');
+  //console.log(token)
+  //var tokens = token.replace(/['"]+/g, '');
  
   const handleSubmission = async (e) => {
     const formData = new FormData();
@@ -101,7 +105,7 @@ function MyBlog() {
     await fetch("http://dhirajssh.pythonanywhere.com/api/blogs/", {
       method: "POST",
       body: formData,
-      headers: {"Authorization": `Bearer ${tokens}` },
+      headers: {"Authorization": `Bearer ${authToken.access}` },
     })
     .then((result)=>{
       loadList();
@@ -111,20 +115,6 @@ function MyBlog() {
     });
   };
  
- /*const deleteImage = (productId) =>
-  {
-    axios.delete('http://dhirajssh.pythonanywhere.com/api/blogs/detail/'+productId , {
-      headers: {"Authorization": `Bearer ${tokens}`},
-    })
-    .then((result)=>{
-      loadList();
-    })
-    .catch(()=>{
-      alert('Error in the Code');
-    });
-  
-  };*/
-
   const deleteImage = (productId) => {
     Swal.fire({
         title: 'Are you Sure ?',
@@ -140,7 +130,7 @@ function MyBlog() {
             try {
                 
                 axios.delete('http://dhirajssh.pythonanywhere.com/api/blogs/detail/'+productId , {
-                  headers: {"Authorization": `Bearer ${tokens}`},
+                  headers: {"Authorization": `Bearer ${authToken.access}`},
                 })
                     Swal.fire(
                         'Deleted !',
@@ -224,7 +214,7 @@ function MyBlog() {
            
         
       
-          <div className={classes.mainContainer} style={{marginTop:"20px" ,marginLeft:"10px"}}>
+          <div className={classes.mainContainer} style={{marginTop:"20px" ,marginLeft:"10px" ,marginBottom:"30px"}}>
               <Grid container spacing={4}>
                 
                   {load.map((name) => ( 
@@ -263,7 +253,3 @@ function MyBlog() {
   );
 }
 export default MyBlog;
-
-
-
-

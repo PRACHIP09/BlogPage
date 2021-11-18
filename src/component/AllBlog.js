@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useContext} from "react";
 import axios from "axios";
 import {
   makeStyles,
@@ -13,9 +13,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { experimentalStyled as styled } from '@mui/material/styles';
-import Pagination from '@mui/material/Pagination';
-import { height } from "@mui/system";
-
+import InfiniteScroll from "react-infinite-scroll-component";
+import AuthContext from "./AuthContext";
+import EndMsg from "./Endmsg";
+import Loader from "./Loader";
+import Comment from "./Comment";
 const useStyles = makeStyles((theme) => 
 ({
   
@@ -74,43 +76,63 @@ const useStyles = makeStyles((theme) =>
 function MyBlog() {
   
   const [image, setLoadImage] = useState([]);
-  var token=localStorage.getItem('user')
-  var tokens = token.replace(/['"]+/g, '');
-  //var pages = localStorage.getItem('pages');
+  const [hasMore, sethasMore] = useState(true);
+  const [page, setpage] = useState(2);
+
+  let {authToken} = useContext(AuthContext)
+
   useEffect(() => {
     loadList();
-  }, [image]);
+  }, []);
  
-
-  {/*http://dhirajssh.pythonanywhere.com/api/blogs/*/}
- const loadList = async (page) => {
-    const result = await axios.get(`http://dhirajssh.pythonanywhere.com/api/page?page=${page}`,{
-      headers: {"Authorization": `Bearer ${tokens}`},
+ const loadList = async () => {
+    const result = await axios.get(`http://dhirajssh.pythonanywhere.com/api/page?page=1`,{
+      headers: {"Authorization": `Bearer ${authToken.access}`},
     })
-    setLoadImage(result.data)
-    
+    setLoadImage(result.data.results)
+
   };
-  var tokens = token.replace(/['"]+/g, '');
-  const Item = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
 
- /* const handleChange = async(page) => {
-    console.log(page)
-    localStorage.setItem('pages',JSON.stringify(page));
-    
-  }*/
+  const fetchComments = async () => {
+    const res = await axios.get(`http://dhirajssh.pythonanywhere.com/api/page?page=${page}`,{
+      headers: {"Authorization": `Bearer ${authToken.access}`},
+    })
+    const data = await res.data.results
+    //console.log(data)
+    return data;
+  };
+  
 
+
+
+  const fetchData = async () => {
+
+    const commentsFormServer = await fetchComments();
+
+    setLoadImage([...image, ...commentsFormServer]);
+    if(commentsFormServer.length === 0 || commentsFormServer.length < 10) {
+    sethasMore(false)
+    }
+    setpage(page + 1)
+};
+
+ // console.log(image)
   const classes = useStyles();
   return (
+
+    <InfiniteScroll
+    dataLength={10}
+    next={fetchData}
+    hasMore={hasMore}
+    loader={<Loader/>}
+    endMessage={<EndMsg />}
+  >
+     
     <div  className={classes.root}>
       
           <div className={classes.mainContainer} style={{marginTop:"20px" ,marginLeft:"10px"}}>
               <Grid container spacing={4}>
-                {image.results?.map(name => ( 
+                {image?.map(name => (
                 <Grid item md={3}>
                 <Card sx={{ width: 250 }}>
                 <Typography gutterBottom variant="h5" component="div" style={{marginLeft:"20px"}}>{name.id} - {name.user_name}</Typography>
@@ -118,7 +140,6 @@ function MyBlog() {
                   component="img"
                   alt="green iguana"
                   height="140"
-                  /*src={"https://dhirajssh.pythonanywhere.com/" + name.image}*/
                   src={name.image}
                 />
                 <CardContent>
@@ -141,20 +162,15 @@ function MyBlog() {
          
         </div>
         <div style={{justifyContent:"center",alignItems:"center" , marginTop:"15px" , marginLeft:"15px" , marginBottom:"20px"}}>
-        <Pagination 
-        count={5} 
-        variant="outlined"
-        onChange={e => loadList(e.target.textContent)} 
-        color="secondary" 
-        />
+
         </div>
       
       </div>
+      </InfiniteScroll>
   );
+  
 }
 export default MyBlog;
-
-
 
 
 
